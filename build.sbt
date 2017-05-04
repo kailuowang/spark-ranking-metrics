@@ -1,12 +1,16 @@
 import scala.xml.XML
+import sbtrelease.ReleaseStateTransformations._
 
-organization := "com.github.jongwook"
+organization := "com.kailuowang"
 
 name := "spark-ranking-metrics"
 
-isSnapshot := version.value.endsWith("-SNAPSHOT")
+scalaVersion := "2.11.11"
 
-scalaVersion := "2.11.8"
+scmInfo := Some(ScmInfo(
+  url("https://github.com/kailuowang/spark-ranking-metrics"),
+  "git@github.com:kailuowang/spark-ranking-metrics.git",
+  Some("git@github.com:kailuowang/spark-ranking-metrics.git")))
 
 libraryDependencies ++= Seq("provided", "test").map { config =>
   "org.apache.spark" %% "spark-mllib" % "2.0.0" % config
@@ -17,24 +21,10 @@ libraryDependencies ++= Seq("provided", "test").map { config =>
 
 releasePublishArtifactsAction := PgpKeys.publishSigned.value
 
-credentials ++= {
-  val xml = XML.loadFile(new File(System.getProperty("user.home")) / ".m2" / "settings.xml")
-  for (server <- xml \\ "server" if (server \ "id").text == "ossrh") yield {
-    Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", (server \ "username").text, (server \ "password").text)
-  }
-}
-
-publishTo := {
-  if (isSnapshot.value) {
-    Some("apache" at "https://oss.sonatype.org/content/repositories/snapshots")
-  } else {
-    Some("apache" at "https://oss.sonatype.org/service/local/staging/deploy/maven2")
-  }
-}
 
 pomIncludeRepository := { _ => false }
 
-pomExtra := {
+pomExtra in Global := {
   <url>http://github.com/jongwook/spark-ranking-metrics</url>
   <licenses>
     <license>
@@ -55,3 +45,24 @@ pomExtra := {
     </developer>
   </developers>
 }
+
+
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runClean,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  publishArtifacts,
+  setNextVersion,
+  commitNextVersion,
+  ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
+  pushChanges
+)
+
+publishArtifact in Test := false
+
+licenses := Seq("Unlicense" -> url("http://unlicense.org/"))
+homepage := Some(url("https://github.com/kailuowang/spark-ranking-metrics"))
