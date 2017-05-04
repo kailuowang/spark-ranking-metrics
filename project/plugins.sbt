@@ -4,4 +4,4 @@ addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.4")
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.3")
 
 
-addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.4.0")
+addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")
