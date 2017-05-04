@@ -1,11 +1,12 @@
-import scala.xml.XML
-import sbtrelease.ReleaseStateTransformations._
 
 organization := "com.kailuowang"
 
 name := "spark-ranking-metrics"
 
 scalaVersion := "2.11.11"
+
+
+bintrayOrganization := Some("kailuowang")
 
 scmInfo := Some(ScmInfo(
   url("https://github.com/kailuowang/spark-ranking-metrics"),
@@ -19,8 +20,7 @@ libraryDependencies ++= Seq("provided", "test").map { config =>
   "net.recommenders.rival" % "rival-evaluate" % "0.2" % "test"
 )
 
-releasePublishArtifactsAction := PgpKeys.publishSigned.value
-
+publishMavenStyle := false
 
 pomIncludeRepository := { _ => false }
 
@@ -47,22 +47,9 @@ pomExtra in Global := {
 }
 
 
-releaseProcess := Seq[ReleaseStep](
-  checkSnapshotDependencies,
-  inquireVersions,
-  runClean,
-  runTest,
-  setReleaseVersion,
-  commitReleaseVersion,
-  tagRelease,
-  publishArtifacts,
-  setNextVersion,
-  commitNextVersion,
-  ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
-  pushChanges
-)
-
 publishArtifact in Test := false
+
 
 licenses := Seq("Unlicense" -> url("http://unlicense.org/"))
 homepage := Some(url("https://github.com/kailuowang/spark-ranking-metrics"))
+description := "spark ranking metrics"
